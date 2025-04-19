@@ -123,11 +123,10 @@
                     const sign = md5(param + apiConfig.key + apiConfig.customer).toUpperCase();
                     
                     const response = await fetch('https://poll.kuaidi100.com/poll/query.do', {
-                    method: 'POST',
-                    mode: 'no-cors', // 设置mode为'no-cors'
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
                         body: new URLSearchParams({
                             customer: apiConfig.customer,
                             sign: sign,
@@ -135,7 +134,23 @@
                         })
                     });
                     
-                    const data = await response.json();
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    const text = await response.text();
+                    let data;
+                    if (text) {
+                        try {
+                            data = JSON.parse(text);
+                        } catch (error) {
+                            console.error('Failed to parse JSON:', error);
+                            data = { message: "数据解析失败" };
+                        }
+                    } else {
+                        data = { message: "服务器返回空数据" };
+                    }
+
                     updateCard(express.number, data);
                 } catch (error) {
                     updateCard(express.number, { 
