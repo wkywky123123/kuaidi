@@ -120,7 +120,7 @@
                         num: express.number
                     });
                     
-                    const sign = md5(param + apiConfig.key + apiConfig.customer).toUpperCase();
+                    const sign = md5(JSON.stringify(param) + apiConfig.key + apiConfig.customer);
                     
                     const response = await fetch('https://poll.kuaidi100.com/poll/query.do', {
                         method: 'POST',
